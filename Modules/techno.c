@@ -1,58 +1,24 @@
 #include "Python.h"
 
-//
-//mod_ty
-//PyParser_ASTFromFileObject(FILE *fp, PyObject *filename, const char* enc,
-//                           int start, const char *ps1,
-//                           const char *ps2, PyCompilerFlags *flags, int *errcode,
-//                           PyArena *arena)
-//{
-//    mod_ty mod;
-//    PyCompilerFlags localflags;
-//    perrdetail err;
-//    int iflags = PARSER_FLAGS(flags);
-//
-//    node *n = PyParser_ParseFileObject(fp, filename, enc,
-//                                       &_PyParser_Grammar,
-//                                       start, ps1, ps2, &err, &iflags);
-//    if (flags == NULL) {
-//        localflags.cf_flags = 0;
-//        flags = &localflags;
-//    }
-//    if (n) {
-//        flags->cf_flags |= iflags & PyCF_MASK;
-//        mod = PyAST_FromNodeObject(n, flags, filename, arena);
-//        PyNode_Free(n);
-//    }
-//    else {
-//        err_input(&err);
-//        if (errcode)
-//            *errcode = err.error;
-//        mod = NULL;
-//    }
-//    err_free(&err);
-//    return mod;
-//}
-//
-//
-//static PyObject *
-//run_mod(mod_ty mod, PyObject *filename, PyObject *globals, PyObject *locals,
-//            PyCompilerFlags *flags, PyArena *arena)
-//{
-//    PyCodeObject *co;
-//    PyObject *v;
-//    co = PyAST_CompileObject(mod, filename, flags, -1, arena);
-//    if (co == NULL)
-//        return NULL;
-//    v = PyEval_EvalCode((PyObject*)co, globals, locals);
-//    Py_DECREF(co);
-//    return v;
-//}
+
+PyObject *
+do_nothing(PyObject *self)
+{
+	PyUnicodeObject *string= PyUnicode_FromString("hello world");
+	return string;
+}
 
 
+#define PUBLIC_METHOD_TYPE (METH_VARARGS|METH_KEYWORDS)
 static PyMethodDef techno_functions[] =  {
+	{
+			"do_nothing",
+			(PyCFunction)do_nothing,
+			PUBLIC_METHOD_TYPE,
+	        PyDoc_STR("Does nothing really.")
+	},
     {NULL, NULL, 0, NULL}
-    };
+};
 
 
 static struct PyModuleDef techno= {
@@ -72,7 +38,7 @@ PyMODINIT_FUNC PyInit_techno(void);  /* supply a prototype */
 PyMODINIT_FUNC
 PyInit_techno(void)
 {
-    PyObject *module, *copyreg;
+    PyObject *module;
     module = PyModule_Create(&techno);
     return module;
 }
