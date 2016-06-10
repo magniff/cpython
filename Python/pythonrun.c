@@ -159,6 +159,10 @@ PyRun_InteractiveOneObject(FILE *fp, PyObject *filename, PyCompilerFlags *flags)
     _Py_IDENTIFIER(encoding);
     _Py_IDENTIFIER(__main__);
 
+//    PyObject *parsermod= PyImport_ImportModule("parser");
+//    PyObject *parser_dict = PyModule_GetDict(parsermod);
+//    PyObject *compile_function = PyDict_GetItemString(parser_dict, "compilest");
+
     mod_name = _PyUnicode_FromId(&PyId___main__); /* borrowed */
     if (mod_name == NULL) {
         PyErr_Print();
