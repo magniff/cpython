@@ -161,9 +161,9 @@ PyRun_InteractiveOneObject(FILE *fp, PyObject *filename, PyCompilerFlags *flags)
     _Py_IDENTIFIER(encoding);
     _Py_IDENTIFIER(__main__);
     char *line = NULL;
-    PyObject *line_object, *techno_module, *module_entry;
+    PyObject *line_object, *techno_module, *module_entry, *entry_args;
     size_t len = 0;
-    ssize_t read;
+    ssize_t read, prev_read;
 
 
     mod_name = _PyUnicode_FromId(&PyId___main__); /* borrowed */
@@ -217,17 +217,22 @@ PyRun_InteractiveOneObject(FILE *fp, PyObject *filename, PyCompilerFlags *flags)
         return -1;
     }
 
-    techno_module = PyImport_Import(PyUnicode_FromString("techno"));
+    techno_module = PyImport_ImportModule("techno");
     module_entry = PyObject_GetAttr(
     	techno_module, PyUnicode_FromString("main_entry")
 	);
 
     printf("<magniff`s mode> ");
     read = getline(&line, &len, fp);
-    line_object = PyUnicode_FromFormat(line);
-    PyObject_Call(module_entry, PyTuple_Pack(1, line_object), NULL);
     if (read == -1)
-    		return 11;
+    	return 11;
+
+    line_object = PyUnicode_FromFormat(line);
+    PyObject_Call(module_entry, entry_args=PyTuple_Pack(1, line_object), NULL);
+    Py_DECREF(line_object);
+    Py_DECREF(module_entry);
+    Py_DECREF(techno_module);
+    Py_DECREF(entry_args);
     flush_io();
     return 0;
 }
