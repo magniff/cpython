@@ -217,8 +217,10 @@ PyRun_InteractiveOneObject(FILE *fp, PyObject *filename, PyCompilerFlags *flags)
         return -1;
     }
 
-    techno_module = PyImport_ImportModule("techno");
-    module_entry = PyObject_GetAttr(techno_module, PyUnicode_FromString("print_this"));
+    techno_module = PyImport_Import(PyUnicode_FromString("techno"));
+    module_entry = PyObject_GetAttr(
+    	techno_module, PyUnicode_FromString("main_entry")
+	);
 
     printf("<magniff`s mode> ");
     read = getline(&line, &len, fp);
@@ -228,35 +230,6 @@ PyRun_InteractiveOneObject(FILE *fp, PyObject *filename, PyCompilerFlags *flags)
     		return 11;
     flush_io();
     return 0;
-    //    mod = PyParser_ASTFromFileObject(fp, filename, enc,
-//                                     Py_single_input, ps1, ps2,
-//                                     flags, &errcode, arena);
-//    Py_XDECREF(v);
-//    Py_XDECREF(w);
-//    Py_XDECREF(oenc);
-//    if (mod == NULL) {
-//        PyArena_Free(arena);
-//        if (errcode == E_EOF) {
-//            PyErr_Clear();
-//            return E_EOF;
-//        }
-//        PyErr_Print();
-//        return -1;
-//    }
-//    m = PyImport_AddModuleObject(mod_name);
-//    if (m == NULL) {
-//        PyArena_Free(arena);
-//        return -1;
-//    }
-//    d = PyModule_GetDict(m);
-//    v = run_mod(mod, filename, d, d, flags, arena);
-//    PyArena_Free(arena);
-//    if (v == NULL) {
-//        PyErr_Print();
-//        flush_io();
-//        return -1;
-//    }
-//    Py_DECREF(v);
 }
 
 int
