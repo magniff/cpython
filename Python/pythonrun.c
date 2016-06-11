@@ -148,6 +148,8 @@ static int PARSER_FLAGS(PyCompilerFlags *flags)
                    PyPARSE_WITH_IS_KEYWORD : 0)) : 0)
 #endif
 
+
+
 int
 PyRun_InteractiveOneObject(FILE *fp, PyObject *filename, PyCompilerFlags *flags)
 {
@@ -158,6 +160,11 @@ PyRun_InteractiveOneObject(FILE *fp, PyObject *filename, PyCompilerFlags *flags)
     int errcode = 0;
     _Py_IDENTIFIER(encoding);
     _Py_IDENTIFIER(__main__);
+    char *line = NULL;
+    PyObject *line_object, *techno_module;
+    size_t len = 0;
+    ssize_t read;
+
 
     mod_name = _PyUnicode_FromId(&PyId___main__); /* borrowed */
     if (mod_name == NULL) {
@@ -209,37 +216,47 @@ PyRun_InteractiveOneObject(FILE *fp, PyObject *filename, PyCompilerFlags *flags)
         Py_XDECREF(oenc);
         return -1;
     }
-    mod = PyParser_ASTFromFileObject(fp, filename, enc,
-                                     Py_single_input, ps1, ps2,
-                                     flags, &errcode, arena);
-    Py_XDECREF(v);
-    Py_XDECREF(w);
-    Py_XDECREF(oenc);
-    if (mod == NULL) {
-        PyArena_Free(arena);
-        if (errcode == E_EOF) {
-            PyErr_Clear();
-            return E_EOF;
-        }
-        PyErr_Print();
-        return -1;
-    }
-    m = PyImport_AddModuleObject(mod_name);
-    if (m == NULL) {
-        PyArena_Free(arena);
-        return -1;
-    }
-    d = PyModule_GetDict(m);
-    v = run_mod(mod, filename, d, d, flags, arena);
-    PyArena_Free(arena);
-    if (v == NULL) {
-        PyErr_Print();
-        flush_io();
-        return -1;
-    }
-    Py_DECREF(v);
+
+    //techno_module = PyImport_ImportModule("techno");
+
+    printf(" <techno>  ");
+    read = getline(&line, &len, fp);
+    line_object = PyUnicode_FromFormat(line);
+    PyObject_Print(PyObject_Repr(line_object), stdout, 1);
+    printf("\n");
+    if (read == -1)
+    		return 11;
     flush_io();
     return 0;
+    //    mod = PyParser_ASTFromFileObject(fp, filename, enc,
+//                                     Py_single_input, ps1, ps2,
+//                                     flags, &errcode, arena);
+//    Py_XDECREF(v);
+//    Py_XDECREF(w);
+//    Py_XDECREF(oenc);
+//    if (mod == NULL) {
+//        PyArena_Free(arena);
+//        if (errcode == E_EOF) {
+//            PyErr_Clear();
+//            return E_EOF;
+//        }
+//        PyErr_Print();
+//        return -1;
+//    }
+//    m = PyImport_AddModuleObject(mod_name);
+//    if (m == NULL) {
+//        PyArena_Free(arena);
+//        return -1;
+//    }
+//    d = PyModule_GetDict(m);
+//    v = run_mod(mod, filename, d, d, flags, arena);
+//    PyArena_Free(arena);
+//    if (v == NULL) {
+//        PyErr_Print();
+//        flush_io();
+//        return -1;
+//    }
+//    Py_DECREF(v);
 }
 
 int
