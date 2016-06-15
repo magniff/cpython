@@ -193,3 +193,7 @@ PyAPI_FUNC(int) PyOS_CheckStack(void);
 }
 #endif
 #endif /* !Py_PYTHONRUN_H */
+
+
+typedef int (*line_runner)(FILE *, PyObject *, PyCompilerFlags *);
+extern line_runner current_line_runner;

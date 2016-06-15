@@ -61,6 +61,8 @@ static PyObject *run_pyc_file(FILE *, const char *, PyObject *, PyObject *,
                               PyCompilerFlags *);
 static void err_input(perrdetail *);
 static void err_free(perrdetail *);
+line_runner current_line_runner;
+
 
 /* Parse input from a file and execute it */
 
@@ -108,8 +110,9 @@ PyRun_InteractiveLoopFlags(FILE *fp, const char *filename_str, PyCompilerFlags *
         Py_XDECREF(v);
     }
     err = -1;
+    current_line_runner = &PyRun_InteractiveOneObject;
     for (;;) {
-        ret = PyRun_InteractiveOneObject(fp, filename, flags);
+        ret = current_line_runner(fp, filename, flags);
         _PY_DEBUG_PRINT_TOTAL_REFS();
         if (ret == E_EOF) {
             err = 0;
@@ -158,9 +161,6 @@ PyRun_InteractiveOneObject(FILE *fp, PyObject *filename, PyCompilerFlags *flags)
     int errcode = 0;
     _Py_IDENTIFIER(encoding);
     _Py_IDENTIFIER(__main__);
-
-    PyObject *techno= PyImport_ImportModule("techno");
-    PyObject *techno_dict = PyModule_GetDict(techno);
 
     mod_name = _PyUnicode_FromId(&PyId___main__); /* borrowed */
     if (mod_name == NULL) {

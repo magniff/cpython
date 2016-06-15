@@ -1,21 +1,47 @@
 #include "Python.h"
 
 
-PyObject *
-do_nothing(PyObject *self)
+line_runner current_line_runner;
+line_runner original_line_runner;
+
+
+int counter = 0;
+
+
+int
+my_function(FILE *fp, PyObject *filename, PyCompilerFlags *flags)
 {
-	PyUnicodeObject *string= PyUnicode_FromString("hello world");
-	return string;
+	printf("COUNTER: %d\n", counter);
+	counter++;
+    return PyRun_InteractiveOneObject(fp, filename, flags);
+}
+
+
+PyObject *init_hack(PyObject *self){
+	current_line_runner = &my_function;
+	return Py_None;
+}
+
+
+PyObject *reset_hack(PyObject *self){
+	current_line_runner = original_line_runner;
+	return Py_None;
 }
 
 
 #define PUBLIC_METHOD_TYPE (METH_VARARGS|METH_KEYWORDS)
 static PyMethodDef techno_functions[] =  {
 	{
-			"do_nothing",
-			(PyCFunction)do_nothing,
-			PUBLIC_METHOD_TYPE,
-	        PyDoc_STR("Does nothing really.")
+		"init",
+		init_hack,
+		METH_VARARGS,
+	   "Inject library code into CPython`s memory."
+	},
+	{
+		"reset",
+		reset_hack,
+		METH_VARARGS,
+	   "Brings back original functionality."
 	},
     {NULL, NULL, 0, NULL}
 };
@@ -33,12 +59,10 @@ static struct PyModuleDef techno= {
         NULL
 };
 
-
-PyMODINIT_FUNC PyInit_techno(void);  /* supply a prototype */
 PyMODINIT_FUNC
 PyInit_techno(void)
 {
-    PyObject *module;
-    module = PyModule_Create(&techno);
+    PyObject *module = PyModule_Create(&techno);
+	original_line_runner = current_line_runner;
     return module;
 }
