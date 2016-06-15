@@ -5,7 +5,10 @@
 #include "structmember.h"
 #include "opcode.h"
 
+
 static PyObject *gen_close(PyGenObject *gen, PyObject *args);
+frame_evaluator current_frame_evaluator;
+
 
 static int
 gen_traverse(PyGenObject *gen, visitproc visit, void *arg)
@@ -131,7 +134,7 @@ gen_send_ex(PyGenObject *gen, PyObject *arg, int exc, int closing)
     f->f_back = tstate->frame;
 
     gen->gi_running = 1;
-    result = PyEval_EvalFrameEx(f, exc);
+    result = current_frame_evaluator(f, exc);
     gen->gi_running = 0;
 
     /* Don't keep the reference to f_back any longer than necessary.  It

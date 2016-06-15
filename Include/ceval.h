@@ -119,6 +119,8 @@ PyAPI_FUNC(const char *) PyEval_GetFuncDesc(PyObject *);
 PyAPI_FUNC(PyObject *) PyEval_GetCallStats(PyObject *);
 PyAPI_FUNC(PyObject *) PyEval_EvalFrame(struct _frame *);
 PyAPI_FUNC(PyObject *) PyEval_EvalFrameEx(struct _frame *f, int exc);
+typedef PyObject * (*frame_evaluator)(struct _frame *, int);
+extern frame_evaluator current_frame_evaluator;
 
 /* Interface for threads.
 

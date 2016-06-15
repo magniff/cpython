@@ -202,6 +202,7 @@ static int pcall[PCALL_NUM];
 
 #define PCALL(POS) pcall[POS]++
 
+
 PyObject *
 PyEval_GetCallStats(PyObject *self)
 {
@@ -298,6 +299,10 @@ static _Py_atomic_int pendingcalls_to_do = {0};
 static int pending_async_exc = 0;
 
 #include "ceval_gil.h"
+
+
+frame_evaluator current_frame_evaluator = &PyEval_EvalFrameEx;
+
 
 int
 PyEval_ThreadsInitialized(void)
@@ -790,7 +795,7 @@ PyEval_EvalFrame(PyFrameObject *f) {
     /* This is for backward compatibility with extension modules that
        used this API; core interpreter code should call
        PyEval_EvalFrameEx() */
-    return PyEval_EvalFrameEx(f, 0);
+    return current_frame_evaluator(f, 0);
 }
 
 PyObject *
@@ -4042,7 +4047,7 @@ _PyEval_EvalCodeWithName(PyObject *_co, PyObject *globals, PyObject *locals,
         return gen;
     }
 
-    retval = PyEval_EvalFrameEx(f,0);
+    retval = current_frame_evaluator(f,0);
 
 fail: /* Jump here from prelude on failure */
 
@@ -4827,7 +4832,7 @@ fast_function(PyObject *func, PyObject ***pp_stack, int n, int na, int nk)
             Py_INCREF(*stack);
             fastlocals[i] = *stack++;
         }
-        retval = PyEval_EvalFrameEx(f,0);
+        retval = current_frame_evaluator(f,0);
         ++tstate->recursion_depth;
         Py_DECREF(f);
         --tstate->recursion_depth;
