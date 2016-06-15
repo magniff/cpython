@@ -683,9 +683,6 @@ class PyBuildExt(build_ext):
         # Fred Drake's interface to the Python parser
         exts.append( Extension('parser', ['parsermodule.c']) )
 
-        # magniff`s interface to the Python parser
-        exts.append( Extension('techno', ['techno.c']) )
-
         # Memory-mapped files (also works on Win32).
         exts.append( Extension('mmap', ['mmapmodule.c']) )
 
